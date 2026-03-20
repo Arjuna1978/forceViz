@@ -1,0 +1,111 @@
+{
+  "nodes": [
+    { "id": "VIDEO_ASSET_ROOT", "name": "VIDEO ASSET", "val": 30, "group": 1 },
+
+    { "id": "CAT_CORE", "name": "Core Identifiers", "val": 20, "group": 2 },
+    { "id": "CAT_ADMIN", "name": "ADMINISTRATIVE", "val": 20, "group": 2 },
+    { "id": "CAT_DESC", "name": "DESCRIPTIVE", "val": 20, "group": 2 },
+    { "id": "CAT_CONTENT_SEO", "name": "CONTENT and SEO", "val": 20, "group": 2 },
+    { "id": "CAT_RIGHTS", "name": "RIGHTS METADATA", "val": 20, "group": 2 },
+    { "id": "CAT_TECH", "name": "TECHNICAL", "val": 20, "group": 2 },
+    { "id": "CAT_AI", "name": "AI ASSET METADATA", "val": 20, "group": 2 },
+
+    { "id": "video_identifier", "name": "video_identifier", "val": 5, "group": 3, "format": "UUID v4" },
+    { "id": "descriptive_metadata_identifier", "name": "descriptive_metadata_identifier", "val": 5, "group": 3, "format": "UUID v4" },
+
+    { "id": "ad_control", "name": "ad_control", "val": 5, "group": 3, "options": ["true", "false", "preroll_only", "midroll_only", "no_midrolls"] },
+    { "id": "premium", "name": "premium", "val": 5, "group": 3, "options": ["true", "false"] },
+    { "id": "ready_for_release", "name": "ready_for_release", "val": 5, "group": 3, "options": ["Draft", "In Review", "Approved", "Final", "Archived"] },
+    { "id": "workflow_rating", "name": "workflow_rating", "val": 5, "group": 3, "options": [1, 2, 3, 4, 5] },
+    { "id": "language", "name": "language", "val": 5, "group": 3, "vocabulary": "ISO 639-1 / 639-2" },
+    { "id": "content_warning", "name": "content_warning", "val": 5, "group": 3, "options": ["Violence", "Sexual Content", "Offensive Language", "Substance Abuse", "Flashing Lights", "None"] },
+    { "id": "video_rendition", "name": "video_rendition", "val": 5, "group": 3, "options": ["Master", "Proxy", "Web", "Social Media", "Mezzanine", "Preview"] },
+    { "id": "workflow_tag", "name": "workflow_tag", "val": 5, "group": 3, "options": ["Raw", "Selects", "B-Roll", "Pickup", "Final Cut", "Sound Mix", "Color Grade"] },
+    { "id": "review_rating", "name": "review_rating", "val": 5, "group": 3, "vocabulary": "MPAA / BBFC" },
+    { "id": "date_released", "name": "date_released", "val": 5, "group": 3, "format": "ISO 8601" },
+    { "id": "comment_control", "name": "comment_control", "val": 5, "group": 3, "options": ["Open", "Moderated", "Closed"] },
+    { "id": "production_type", "name": "production_type", "val": 5, "group": 3, "options": ["Studio", "Remote", "OB (Outside Broadcast)", "User Generated"] },
+
+    { "id": "term_about_content", "name": "term_about_content", "val": 5, "group": 3, "vocabulary": "IAB Content Taxonomy / EBU Subject" },
+    { "id": "target_audience", "name": "target_audience", "val": 5, "group": 3, "vocabulary": "IAB Audience Taxonomy 1.1 (Vectors)" },
+    { "id": "headline", "name": "headline", "val": 5, "group": 3, "vocabulary": "IAB Content Taxonomy L1" },
+    { "id": "iab_tier_1", "name": "iab_tier_1", "val": 5, "group": 3, "vocabulary": "IAB Content L1" },
+    { "id": "iab_tier_2", "name": "iab_tier_2", "val": 5, "group": 3, "vocabulary": "IAB Content L2" },
+    { "id": "content_category", "name": "content_category", "val": 5, "group": 3, "vocabulary": "IPTC Media Topics (L1/L2)" },
+    { "id": "genre", "name": "genre", "val": 5, "group": 3, "vocabulary": "MovieLabs OMC / EBU Genre" },
+    { "id": "shot_type", "name": "shot_type", "val": 5, "group": 3, "options": ["Extreme Close Up", "Close Up", "Medium Shot", "Full Shot", "Long Shot"] },
+    { "id": "product_shown", "name": "product_shown", "val": 5, "group": 3, "vocabulary": "IAB Product Taxonomy" },
+    { "id": "visual_colour", "name": "visual_colour", "val": 5, "group": 3, "options": ["Monochrome", "Black and White", "Color", "Colorized", "HDR"] },
+
+    { "id": "data_mining", "name": "data_mining", "val": 5, "group": 3, "options": ["allowed", "prohibited", "prohibited for AI training", "unspecified"] },
+    { "id": "fair_dealing", "name": "fair_dealing", "val": 5, "group": 3, "options": ["true", "false"] },
+    { "id": "model_release_status", "name": "model_release_status", "val": 5, "group": 3, "options": ["None", "Full", "Partial", "Unlimited"] },
+    { "id": "property_release_status", "name": "property_release_status", "val": 5, "group": 3, "options": ["None", "Full", "Partial", "Unlimited"] },
+
+    { "id": "video_container", "name": "video_container", "val": 5, "group": 3, "options": ["mp4", "mxf", "mov", "mkv", "webm", "ts"] },
+    { "id": "video_coding", "name": "video_coding", "val": 5, "group": 3, "options": ["H.264 (AVC)", "H.265 (HEVC)", "AV1", "ProRes", "VP9"] },
+    { "id": "audio_coding", "name": "audio_coding", "val": 5, "group": 3, "options": ["AAC", "MP3", "WAV", "FLAC", "PCM", "AC-3"] },
+    { "id": "video_bitrate_type", "name": "video_bitrate_type", "val": 5, "group": 3, "options": ["CBR (Constant)", "VBR (Variable)", "ABR (Adaptive)"] },
+    { "id": "audio_bitrate_type", "name": "audio_bitrate_type", "val": 5, "group": 3, "options": ["CBR (Constant)", "VBR (Variable)"] },
+    { "id": "display_aspect_ratio", "name": "display_aspect_ratio", "val": 5, "group": 3, "options": ["16:9", "4:3", "1.85:1", "2.39:1", "9:16", "1:1"] },
+    { "id": "video_frame_rate", "name": "video_frame_rate", "val": 5, "group": 3, "options": ["23.976", "24", "25", "29.97", "30", "50", "59.94", "60"] },
+    { "id": "video_bit_depth", "name": "video_bit_depth", "val": 5, "group": 3, "options": [8, 10, 12, 16] },
+    { "id": "audio_sample_rate", "name": "audio_sample_rate", "val": 5, "group": 3, "options": [44100, 48000, 96000] },
+    { "id": "audio_channel_layout", "name": "audio_channel_layout", "val": 5, "group": 3, "options": ["Mono", "Stereo", "5.1 Surround", "7.1 Surround", "Atmos"] },
+    { "id": "video_scan_type", "name": "video_scan_type", "val": 5, "group": 3, "options": ["progressive", "interlaced"] },
+    { "id": "video_profile", "name": "video_profile", "val": 5, "group": 3, "options": ["Baseline", "Main", "High", "High 10"] },
+    { "id": "signal_format", "name": "signal_format", "val": 5, "group": 3, "options": ["NTSC", "PAL", "SECAM", "HDTV", "UHDTV", "Rec.709", "Rec.2020"] },
+    { "id": "orientation", "name": "orientation", "val": 5, "group": 3, "options": [0, 90, 180, 270] },
+    { "id": "digital_source_type", "name": "digital_source_type", "val": 5, "group": 3, "options": ["original capture", "trained algorithmic media", "composite capture", "software image", "screen capture", "virtual recording"] },
+
+    { "id": "ai_system_used", "name": "ai_system_used", "val": 5, "group": 3, "vocabulary": "Wikidata QID" }
+  ],
+  "links": [
+    { "source": "VIDEO_ASSET_ROOT", "target": "CAT_CORE", "value": 1 },
+    { "source": "VIDEO_ASSET_ROOT", "target": "CAT_ADMIN", "value": 1 },
+    { "source": "VIDEO_ASSET_ROOT", "target": "CAT_DESC", "value": 1 },
+    { "source": "VIDEO_ASSET_ROOT", "target": "CAT_CONTENT_SEO", "value": 1 },
+    { "source": "VIDEO_ASSET_ROOT", "target": "CAT_RIGHTS", "value": 1 },
+    { "source": "VIDEO_ASSET_ROOT", "target": "CAT_TECH", "value": 1 },
+    { "source": "VIDEO_ASSET_ROOT", "target": "CAT_AI", "value": 1 },
+
+    { "source": "CAT_CORE", "target": "video_identifier", "value": 1 },
+    { "source": "CAT_CORE", "target": "descriptive_metadata_identifier", "value": 1 },
+
+    { "source": "CAT_ADMIN", "target": "ad_control", "value": 1 },
+    { "source": "CAT_ADMIN", "target": "premium", "value": 1 },
+    { "source": "CAT_ADMIN", "target": "ready_for_release", "value": 1 },
+    { "source": "CAT_ADMIN", "target": "language", "value": 1 },
+    { "source": "CAT_ADMIN", "target": "content_warning", "value": 1 },
+    { "source": "CAT_ADMIN", "target": "video_rendition", "value": 1 },
+    { "source": "CAT_ADMIN", "target": "date_released", "value": 1 },
+    { "source": "CAT_ADMIN", "target": "production_type", "value": 1 },
+
+    { "source": "CAT_DESC", "target": "term_about_content", "value": 1 },
+    { "source": "CAT_DESC", "target": "target_audience", "value": 1 },
+    { "source": "CAT_DESC", "target": "genre", "value": 1 },
+    { "source": "CAT_DESC", "target": "shot_type", "value": 1 },
+    { "source": "CAT_DESC", "target": "product_shown", "value": 1 },
+
+    { "source": "CAT_CONTENT_SEO", "target": "headline", "value": 1 },
+    { "source": "CAT_CONTENT_SEO", "target": "iab_tier_1", "value": 1 },
+    { "source": "CAT_CONTENT_SEO", "target": "iab_tier_2", "value": 1 },
+    { "source": "CAT_CONTENT_SEO", "target": "content_category", "value": 1 },
+
+    { "source": "CAT_RIGHTS", "target": "data_mining", "value": 1 },
+    { "source": "CAT_RIGHTS", "target": "fair_dealing", "value": 1 },
+    { "source": "CAT_RIGHTS", "target": "model_release_status", "value": 1 },
+    { "source": "CAT_RIGHTS", "target": "property_release_status", "value": 1 },
+
+    { "source": "CAT_TECH", "target": "video_container", "value": 1 },
+    { "source": "CAT_TECH", "target": "video_coding", "value": 1 },
+    { "source": "CAT_TECH", "target": "audio_coding", "value": 1 },
+    { "source": "CAT_TECH", "target": "display_aspect_ratio", "value": 1 },
+    { "source": "CAT_TECH", "target": "video_bit_depth", "value": 1 },
+    { "source": "CAT_TECH", "target": "audio_channel_layout", "value": 1 },
+    { "source": "CAT_TECH", "target": "video_scan_type", "value": 1 },
+    { "source": "CAT_TECH", "target": "digital_source_type", "value": 1 },
+
+    { "source": "CAT_AI", "target": "ai_system_used", "value": 1 }
+  ]
+}

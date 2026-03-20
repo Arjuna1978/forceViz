@@ -1,0 +1,126 @@
+erDiagram
+    ITEM {
+        UUID id PK
+        Enum itemType "video, image, audio, file, sequence..."
+        String originalFileName
+        String status
+        Float mediaDuration
+        Float mediaFramerate
+        Integer audioChannels
+        String versionState
+        UUID replacedBy FK "Pointer to new version"
+    }
+
+    FOLDER {
+        UUID id PK
+        String name
+        UUID parentFolder FK
+        UUID createdBy
+        Timestamp createdAt
+        Timestamp updatedAt
+    }
+
+    PERSON {
+        UUID id PK
+        String name
+        String description
+        UUID primaryImageId FK
+    }
+
+    MDF_SCHEMA {
+        UUID id PK
+        String label
+        String flavor
+        JSON fields "Form schema definition"
+    }
+
+    METADATA {
+        UUID itemId FK
+        UUID formId FK
+        JSON formData "Custom Key-Value payload"
+    }
+
+    TIMED_METADATA {
+        String id PK
+        UUID itemId FK
+        Integer startMs
+        Integer endMs
+        JSON data "Form payload for this time slice"
+    }
+
+    STORAGE {
+        String id PK
+        Enum storageType "aws-s3, kelda..."
+        String bucketName
+    }
+
+    ITEM_MEDIA_LOCATION {
+        UUID itemId FK
+        String storageId FK
+        Enum locationType "highRes, proxy, editProxy"
+        String path
+    }
+
+    ATTACHMENT {
+        UUID itemId FK
+        String fileName
+        Enum type
+        Enum role
+        String language
+    }
+
+    RELATION {
+        UUID itemId FK
+        Enum relationType "related, parent, child..."
+        UUID relatedItemId FK
+    }
+
+    SEQUENCE_CLIP {
+        UUID sequenceItemId FK
+        UUID sourceItemId FK
+        Float inPoint "Time in source"
+        Float outPoint "Time in source"
+        Float timelineStart "Time in sequence"
+    }
+
+    LIVE_SOURCE {
+        UUID id PK
+        Enum sourceType
+        UUID targetFolder FK
+    }
+
+    SYSTEM_ACTIVITY {
+        UUID id PK
+        Enum type
+        UUID itemId FK
+        String actionType
+        UUID executedBy
+        Timestamp executedOn
+        JSON mdfDiff
+    }
+
+    %% Relationships
+    ITEM }|--|{ FOLDER : "folderParents (maps to multiple)"
+    ITEM ||--o| ITEM : "replacedBy (versioning)"
+    FOLDER ||--o| FOLDER : "parentFolder (nested)"
+    PERSON ||--o| ITEM : "primaryImage (avatar)"
+    
+    %% Metadata Relationships
+    ITEM ||--o| METADATA : "contains"
+    METADATA }o--|| MDF_SCHEMA : "validates against"
+    ITEM ||--o{ TIMED_METADATA : "contains (AI/Logging)"
+    
+    %% Storage & Media
+    ITEM ||--o{ ITEM_MEDIA_LOCATION : "stored at"
+    ITEM_MEDIA_LOCATION }o--|| STORAGE : "located in"
+    ITEM ||--o{ ATTACHMENT : "has sidecars"
+    
+    %% Genealogy & Sequences
+    ITEM ||--o{ RELATION : "has links"
+    RELATION }o--|| ITEM : "points to"
+    ITEM ||--o{ SEQUENCE_CLIP : "composed of (if sequence)"
+    SEQUENCE_CLIP }o--|| ITEM : "references source media"
+    
+    %% Config & Auditing
+    LIVE_SOURCE }o--|| FOLDER : "ingests into"
+    SYSTEM_ACTIVITY }o--|| ITEM : "audits"
