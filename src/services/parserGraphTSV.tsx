@@ -17,15 +17,13 @@ export const parseGraphTSV = (file: File): Promise<GraphData> => {
 
         const headers = lines[0].split("\t").map((h) => h.trim());
 
-        const idIdx = headers.findIndex((h) => h.toLowerCase().includes("UniqueId") || h.toLowerCase() === "id");
-        const parentIdx = headers.findIndex((h) => h.toLowerCase().includes("Parent"));
-        const nameIdx = headers.findIndex((h) => h.toLowerCase().includes("Name"));
+        const idIdx = headers.findIndex((h) => h.toLowerCase().includes("id") || h.toLowerCase() === "id");
+        const parentIdx = headers.findIndex((h) => h.toLowerCase().includes("parent"));
+        const nameIdx = headers.findIndex((h) => h.toLowerCase().includes("name"));
 
         if (idIdx === -1) {
           throw new Error("Could not find an 'ID' or 'Unique ID' column in the TSV.");
         }
-
-        // 1. Use the strict interfaces from your types.ts file
         const nodes: GraphNode[] = [];
         const links: GraphLink[] = [];
 
@@ -38,7 +36,6 @@ export const parseGraphTSV = (file: File): Promise<GraphData> => {
           const parentId = parentIdx !== -1 ? cols[parentIdx] : "";
           const name = nameIdx !== -1 ? cols[nameIdx] : id;
 
-          // 2. Use Record<string, unknown> to satisfy strict type rules
           const nodeData: Record<string, unknown> = {
             id: id,
             name: name,
@@ -50,7 +47,6 @@ export const parseGraphTSV = (file: File): Promise<GraphData> => {
             if (cols[index]) nodeData[header] = cols[index];
           });
 
-          // 3. Cast the final built object back to GraphNode before pushing
           nodes.push(nodeData as GraphNode);
 
           if (parentId) {
