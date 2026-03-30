@@ -1,4 +1,4 @@
-import type { GraphData } from "../types"; // Adjust path if needed
+import type { GraphData } from "../types";
 
 export const parseGraphJSON = (file: File): Promise<GraphData> => {
   return new Promise((resolve, reject) => {
@@ -17,7 +17,6 @@ export const parseGraphJSON = (file: File): Promise<GraphData> => {
           throw new Error("Invalid format: JSON must contain 'nodes' and 'links' arrays.");
         }
 
-        // If everything is good, resolve the promise with the data
         resolve(json as GraphData);
       } catch (err: unknown) {
         if (err instanceof Error) {
@@ -28,7 +27,6 @@ export const parseGraphJSON = (file: File): Promise<GraphData> => {
       }
     };
 
-    // Handle standard file reading errors
     reader.onerror = () => {
       reject(new Error("Failed to read the file."));
     };

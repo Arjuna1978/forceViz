@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light dark;
+}
+
+/* Base structural resets using standard CSS to avoid linting warnings */
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; 
+  background-color: #111827; /* Gray-900 equivalent */
+}
+
+@layer components {
+  /* Using the custom animations defined in your tailwind.config.js */
+  .panel-animate-in {
+    @apply animate-fade-in;
+  }
+
+  .slide-from-top {
+    @apply animate-slide-down;
+  }
+
+  .slide-from-right {
+    @apply animate-slide-left;
+  }
+
+
+}
