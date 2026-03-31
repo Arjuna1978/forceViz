@@ -1,8 +1,18 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { createHtmlPlugin } from 'vite-plugin-html'
+import config from './src/config/config.json'
 
-// https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    createHtmlPlugin({
+      inject: {
+        data: {
+          jsonLd: JSON.stringify(config.seo, null, 2),
+        },
+      },
+    }),
+  ],
   base: '/forceViz/',
 })

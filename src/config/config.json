@@ -1,0 +1,34 @@
+ {
+  "seo": {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Force Viz",
+    "description": "An interactive tool to visualize complex data models and networks using force-directed graph simulations. Supports Mermaid ERD to JSON transformations.",
+    "url": "https://your-domain.com/forceViz",
+    "image": "https://your-domain.com/forceViz/og-preview.png",
+    "browserRequirements": "Requires HTML5 and WebGL support",
+    "applicationCategory": "DeveloperApplication",
+    "applicationSubCategory": "Data Visualization",
+    "operatingSystem": "All",
+    "isAccessibleForFree": true,
+    "keywords": "force-directed graph, mermaid erd, json transformer, network graph",
+    "author": {
+      "@type": "Person",
+      "name": "Arjuna Vijayanayagam"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0.00",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Interactive force-directed graph visualization",
+      "Mermaid ERD to JSON transformation",
+      "Dynamic metadata inspection panels",
+      "Responsive network layout"
+    ],
+    "softwareVersion": "1.0.0",
+    "license": "https://opensource.org/licenses/MIT"
+  }
+}
+
