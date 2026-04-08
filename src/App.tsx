@@ -178,7 +178,7 @@ const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         )}
    
         {selectedNode && (
-          <div className="top-4 right-4 w-80 bg-gray-800/95 graph-overlay-panel p-4 panel-animate-in slide-from-right">
+          <div className="absolute z-50 top-4 right-4 w-80 bg-gray-800/95 graph-overlay-panel p-4 panel-animate-in slide-from-right">
             <div className="flex justify-between items-center mb-3 border-b border-gray-700 pb-2">
               <h2 className="font-bold text-blue-300 text-lg">{selectedNode.name || selectedNode.id}</h2>
               <button onClick={() => setSelectedNode(null)} className="text-gray-400 hover:text-white">✕</button>
