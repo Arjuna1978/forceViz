@@ -22,7 +22,8 @@ export const parseGraphTSV = (file: File): Promise<GraphData> => {
         const nameIdx = headers.findIndex((h) => h.toLowerCase().includes("name"));
 
         if (idIdx === -1) {
-          throw new Error("Could not find an 'ID' or 'Unique ID' column in the TSV.");
+          throw new Error("Could not find a row with 'ID' and 'Name' column in the TSV.");
+          
         }
         const nodes: GraphNode[] = [];
         const links: GraphLink[] = [];
