@@ -343,7 +343,7 @@ export default function App() {
                 className="w-4 h-4 rounded bg-gray-900 border-gray-600 text-blue-500 focus:ring-blue-600 cursor-pointer"
               />
               <label htmlFor="isolate-branch" className="text-sm font-medium text-gray-200 cursor-pointer select-none">
-                Isolate Branch (Focus Mode)
+                Isolate Branch
               </label>
             </div>
 
