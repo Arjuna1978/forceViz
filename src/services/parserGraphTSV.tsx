@@ -1,4 +1,3 @@
-// this TSV is an abstraction of the JSON parser allowing for multiple file types
 import type { GraphData, GraphNode, GraphLink } from "../types";
 
 export const parseGraphTSV = (file: File): Promise<GraphData> => {
@@ -8,61 +7,49 @@ export const parseGraphTSV = (file: File): Promise<GraphData> => {
     reader.onload = () => {
       try {
         const result = reader.result;
-        //Check if the file is ASCII or text
         if (typeof result !== "string") {
           throw new Error("Failed to read file as text.");
         }
-// split text into rows
+
         const lines = result.split(/\r?\n/).filter((line) => line.trim() !== "");
-// checks if the file is empty
-        if (lines.length < 2) throw new Error("TSV file is empty or invalid.");
-let headers: string[] = []; 
-let headerRowIndex = -1;
-let activeDelimiter = "\t";
-// is it a CSV or TSV?
-for (let i = 0; i < Math.min(lines.length, 6); i++) {
-  const currentLine = lines[i];
-  let detectedDelimiter = "";
+        if (lines.length < 2) throw new Error("File is empty or invalid.");
 
-  if (currentLine.includes("\t")) {
-    detectedDelimiter = "\t";
-  } else {
-    const commaCount = (currentLine.match(/,/g) || []).length;
-    if (commaCount >= 3) {
-      detectedDelimiter = ",";
-    }
-  }
+        // Detect delimiter: if any of the first few lines contain a tab, assume TSV. Otherwise, assume CSV.
+        const sampleLines = lines.slice(0, Math.min(5, lines.length));
+        const delimiter = sampleLines.some(line => line.includes("\t")) ? "\t" : ",";
 
-  if (detectedDelimiter) {
-            const cols = currentLine.split(detectedDelimiter).map(c => c.trim());
-            // Strict match for "ID" or "Name" as standalone strings
-            const hasID = cols.some(c => /\bid\b/i.test(c));
-            const hasName = cols.some(c => /name/i.test(c));
+        let headerRowIndex = -1;
+        let headers: string[] = [];
+        let idIdx = -1, parentIdx = -1, nameIdx = -1;
 
-            if (hasID || hasName) {
-              headerRowIndex = i;
-              headers = cols;
-              activeDelimiter = detectedDelimiter;
-              break;
-            }
+        // 1. Smartly find the header row (ignores context rows above the table)
+        for (let i = 0; i < lines.length; i++) {
+          const currentLineCols = lines[i].split(delimiter).map((h) => h.trim());
+          const potentialIdIdx = currentLineCols.findIndex((h) => h.toLowerCase().includes("id") || h.toLowerCase() === "id");
+          const potentialParentIdx = currentLineCols.findIndex((h) => h.toLowerCase().includes("parent"));
+          const potentialNameIdx = currentLineCols.findIndex((h) => h.toLowerCase().includes("name"));
+
+          // Ensure the row has both an ID and a Name column
+          if (potentialIdIdx !== -1 && potentialNameIdx !== -1) {
+            headerRowIndex = i;
+            headers = currentLineCols;
+            idIdx = potentialIdIdx;
+            parentIdx = potentialParentIdx;
+            nameIdx = potentialNameIdx;
+            break;
           }
         }
-        if (headerRowIndex === -1) {
-          throw new Error('This is not a compatible CSV or TSV file: there must be a column named "ID" or "Parent"');
+
+        if (headerRowIndex === -1 || idIdx === -1 || nameIdx === -1) {
+          throw new Error("Could not find both an 'ID' and 'Name' column in the file.");
         }
 
-        const idIdx = headers.findIndex((h) => h.toLowerCase().includes("id") || h.toLowerCase() === "id");
-        const parentIdx = headers.findIndex((h) => h.toLowerCase().includes("parent"));
-        const nameIdx = headers.findIndex((h) => h.toLowerCase().includes("name"));
-
-        if (idIdx === -1) {
-          throw new Error("Could not find an 'ID' or 'Unique ID' column in the TSV.");
-        }
         const nodes: GraphNode[] = [];
         const links: GraphLink[] = [];
 
-        for (let i = 1; i < lines.length; i++) {
-          const cols = lines[i].split("\t").map((c) => c.trim());
+        // 2. Parse data starting from the row after headers
+        for (let i = headerRowIndex + 1; i < lines.length; i++) {
+          const cols = lines[i].split(delimiter).map((c) => c.trim());
           const id = cols[idIdx];
 
           if (!id) continue;
@@ -73,8 +60,8 @@ for (let i = 0; i < Math.min(lines.length, 6); i++) {
           const nodeData: Record<string, unknown> = {
             id: id,
             name: name,
-            group: parentId ? 2 : 1, 
-            val: parentId ? 5 : 15,  
+            group: parentId && parentId !== id ? 2 : 1, // Root node group coloring
+            val: parentId && parentId !== id ? 5 : 15,  // Root nodes are larger
           };
 
           headers.forEach((header, index) => {
@@ -83,9 +70,31 @@ for (let i = 0; i < Math.min(lines.length, 6); i++) {
 
           nodes.push(nodeData as GraphNode);
 
-          if (parentId) {
+          // 3. CRITICAL FIX: Prevent self-referencing loops (like ID 1000 pointing to 1000)
+          if (parentId && parentId !== id) {
             links.push({ source: parentId, target: id });
           }
+        }
+
+        // 4. Detect multiple root nodes and create a single "Root" if needed
+        const linkedTargets = new Set(links.map(l => String(l.target)));
+        const rootNodes = nodes.filter(n => !linkedTargets.has(String(n.id)));
+
+        if (rootNodes.length > 1) {
+          const masterRootId = "master_root";
+          
+          // Add the new master root node
+          nodes.push({
+            id: masterRootId,
+            name: "Root",
+            group: 0, 
+            val: 25, // Make it slightly larger than the other nodes
+          } as GraphNode);
+
+          // Connect all disconnected roots to the new master root
+          rootNodes.forEach(rootNode => {
+            links.push({ source: masterRootId, target: rootNode.id });
+          });
         }
 
         resolve({ nodes, links });
@@ -94,15 +103,15 @@ for (let i = 0; i < Math.min(lines.length, 6); i++) {
         if (err instanceof Error) {
           reject(err);
         } else {
-          reject(new Error("An unexpected error occurred while parsing the TSV."));
+          reject(new Error("An unexpected error occurred while parsing the file."));
         }
       }
     };
 
     reader.onerror = () => {
-      reject(new Error("Failed to read the TSV file."));
+      reject(new Error("Failed to read the file."));
     };
-//Read as text asks the the browser to read the raw bits of the file as a string array.
+
     reader.readAsText(file);
   });
 };
