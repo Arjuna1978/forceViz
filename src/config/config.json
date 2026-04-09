@@ -3,7 +3,7 @@
     "@context": "https://schema.org",
     "@type": "WebApplication",
     "name": "Force Viz",
-    "description": "An interactive tool to visualize complex data models and networks using force-directed graph simulations. Supports Mermaid ERD to JSON transformations.",
+    "description": "An interactive tool to visualize complex data models and networks of data using force-directed graph simulations. Supports Mermaid ERD to JSON transformations.",
     "url": "https://your-domain.com/forceViz",
     "image": "https://your-domain.com/forceViz/og-preview.png",
     "browserRequirements": "Requires HTML5 and WebGL support",
