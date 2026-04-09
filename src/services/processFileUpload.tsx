@@ -1,14 +1,13 @@
 import { parseGraphJSON } from "./parseGraphJSON";
-import { parseGraphTSV } from "./parserGraphTSV";
+import { parseGraphTSV } from "./parserGraphSpreadSheet";
 import type { GraphData } from "../types";
 
 export const processUploadedFile = async (file: File): Promise<GraphData> => {
   const fileName = file.name.toLowerCase();
 
-  if (fileName.endsWith(".tsv")) {
+  if (fileName.endsWith(".tsv")||fileName.endsWith(".csv") ){
     return await parseGraphTSV(file);
   } 
-  
   if (fileName.endsWith(".json")) {
     return await parseGraphJSON(file);
   } 
