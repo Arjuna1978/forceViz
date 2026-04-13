@@ -27,15 +27,14 @@ export default function App() {
     nodes: [],
     links: [],
   });
-  
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
-  const [isolateMode, setIsolateMode] = useState(false); 
+  const [isolateMode, setIsolateMode] = useState(false);
   const [searchQuery, setSearchQuery] = useState(""); // NEW: Search state
   const [loadedFileName, setLoadedFileName] = useState<string | null>(null); // NEW: Store filename
   const [error, setError] = useState<string | null>(null);
   const fgRef = useRef<ForceGraphMethods<GraphNode, GraphLink>>(undefined);
 
-  // NEW: Calculate matched nodes for the dropdown list
+  // Calculate matched nodes for the dropdown list
   const matchedNodes = useMemo(() => {
     if (!searchQuery.trim()) return [];
     const query = searchQuery.toLowerCase();
@@ -54,7 +53,7 @@ export default function App() {
     const startId = selectedNode.id;
     visibleNodeIds.add(startId);
 
-    const getId = (nodeOrId: any) => (typeof nodeOrId === "object" && nodeOrId !== null) ? nodeOrId.id : nodeOrId;
+    const getId = (nodeOrId: string|number|GraphNode) => (typeof nodeOrId === "object" && nodeOrId !== null) ? nodeOrId.id : nodeOrId;
 
     let queue = [startId];
     while (queue.length > 0) {
@@ -98,16 +97,16 @@ export default function App() {
       if (fgRef.current && visibleGraphData.nodes.length > 0) {
         const fg = fgRef.current;
         if (fg.d3Force("link")) {
-          fg.d3Force("link")?.distance(150); 
+          fg.d3Force("link")?.distance(150);
         }
         if (fg.d3Force("charge")) {
-          fg.d3Force("charge")?.strength(-2000); 
+          fg.d3Force("charge")?.strength(-2000);
         }
         fg.d3ReheatSimulation();
       }
     }, 100);
-    return () => clearTimeout(timer); 
-  }, [visibleGraphData]); 
+    return () => clearTimeout(timer);
+  }, [visibleGraphData]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -123,22 +122,23 @@ export default function App() {
   useEffect(() => {
     const initData: GraphData = {
       nodes: [
-        { id: "1", name: "Upload a file to start", val: 10, group: 1 },
-        { id: "2", name: "Brought to you by Arjuna", val: 5, group: 2 },
+        { id: "1", name: "Built by Arjuna", val: 10, group: 1 },
+        { id: "2", name: "Upload a file to start", val: 5, group: 2, filesSupported:"CSV,TSV,JSON"},
+
       ],
-      links: [{ source: "1", target: "2" }],
+      links: [{ source: "1", target: "2" },
+      ]
     };
     setGraphData(initData);
   }, []);
 
   const handleNodeClick = useCallback((node: object) => {
     setSelectedNode(node as GraphNode);
-    setIsolateMode(false); 
+    setIsolateMode(false);
   }, []);
 
   const handleCloseModal = () => {
     setSelectedNode(null);
-    setIsolateMode(false); 
   };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -182,7 +182,7 @@ export default function App() {
 
       // Determine search matches
       const isMatched = searchQuery && (
-        String(node.name || "").toLowerCase().includes(searchQuery.toLowerCase()) || 
+        String(node.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
         String(node.id || "").toLowerCase().includes(searchQuery.toLowerCase())
       );
       const isDimmed = Boolean(searchQuery) && !isMatched;
@@ -273,8 +273,8 @@ export default function App() {
 
           {/* NEW: Display loaded filename */}
           {loadedFileName && (
-            <div 
-              className="text-sm font-medium text-blue-200 bg-blue-900/30 px-3 py-1.5 rounded-md border border-blue-800/50 truncate max-w-[200px] select-none" 
+            <div
+              className="text-sm font-medium text-blue-200 bg-blue-900/30 px-3 py-1.5 rounded-md border border-blue-800/50 truncate max-w-[200px] select-none"
               title={loadedFileName}
             >
               {loadedFileName}
@@ -301,7 +301,7 @@ export default function App() {
             ref={fgRef}
             width={dimensions.width}
             height={dimensions.height - 10}
-            graphData={visibleGraphData} 
+            graphData={visibleGraphData}
             nodeCanvasObject={renderNodeWithLabel}
             nodeAutoColorBy="group"
             nodePointerAreaPaint={(node, color, ctx) => {
@@ -326,14 +326,14 @@ export default function App() {
             dagLevelDistance={200}
           />
         )}
-   
+
         {selectedNode && (
           <div className="absolute z-50 top-4 right-4 w-80 bg-gray-800/95 graph-overlay-panel p-4 panel-animate-in slide-from-right rounded-lg shadow-2xl border border-gray-700">
             <div className="flex justify-between items-center mb-3 border-b border-gray-700 pb-2">
               <h2 className="font-bold text-blue-300 text-lg pr-4">{selectedNode.name || selectedNode.id}</h2>
               <button onClick={handleCloseModal} className="text-gray-400 hover:text-white p-1 rounded-full hover:bg-gray-700 transition">✕</button>
             </div>
-            
+
             <div className="flex items-center gap-2 mb-3 bg-gray-700/50 p-2 rounded">
               <input
                 type="checkbox"
