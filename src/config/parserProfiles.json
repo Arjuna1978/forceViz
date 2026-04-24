@@ -1,0 +1,14 @@
+{
+  "skos": {
+    "namespace": "http://www.w3.org/2004/02/skos/core#",
+    "nodeType": "http://www.w3.org/2004/02/skos/core#Concept",
+    "labelPath":["http://www.w3.org/2004/02/skos/core#prefLabel"],
+    "linkProperty": "http://www.w3.org/2004/02/skos/core#broader"
+  },
+  "fhir": {
+    "namespace": "http://hl7.org/fhir/",
+    "nodeType": "http://hl7.org/fhir/ValueSet",
+    "labelPath": ["name", "v"],
+    "linkProperty": "compose"
+  }
+}
