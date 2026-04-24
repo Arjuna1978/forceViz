@@ -10,12 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "n3": "^2.0.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-force-graph-2d": "^1.29.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
+    "@types/n3": "^1.26.1",
     "@types/node": "^24.12.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",

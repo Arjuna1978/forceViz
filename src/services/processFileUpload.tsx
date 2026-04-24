@@ -1,5 +1,6 @@
 import { parseGraphJSON } from "./parseGraphJSON";
 import { parseGraphTSV } from "./parserGraphSpreadSheet";
+import { parseGraphTurtle } from "./parseGraphTurtle";
 import type { GraphData } from "../types";
 
 export const processUploadedFile = async (file: File): Promise<GraphData> => {
@@ -10,6 +11,9 @@ export const processUploadedFile = async (file: File): Promise<GraphData> => {
   } 
   if (fileName.endsWith(".json")) {
     return await parseGraphJSON(file);
+  } 
+   if (fileName.endsWith(".ttl")) {
+    return await parseGraphTurtle(file);
   } 
   
   throw new Error("Unsupported file type. Please upload a .json or .tsv file.");

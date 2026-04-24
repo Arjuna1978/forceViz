@@ -3,22 +3,9 @@ import ForceGraph2D, { type ForceGraphMethods } from "react-force-graph-2d";
 import type { GraphNode, GraphData, GraphLink } from "./types";
 import { processUploadedFile } from "./services/processFileUpload";
 import logo from "./assets/favicon.svg";
+import graphConfig from "./config/graphConfig.json"
 
-const HIDDEN_KEYS = [
-  "id",
-  "name",
-  "x",
-  "y",
-  "vx",
-  "vy",
-  "index",
-  "fx",
-  "fy",
-  "color",
-  "val",
-  "group",
-  "indexColor"
-];
+
 
 export default function App() {
   const containerRef = useRef<HTMLElement>(null);
@@ -27,8 +14,9 @@ export default function App() {
     nodes: [],
     links: [],
   });
-  const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null);
-  const [isolateMode, setIsolateMode] = useState(false);
+const HIDDEN_KEYS = JSON.stringify(graphConfig.nodes.HddenKeys)
+  const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null); // for keeping track of which node is urrently in focus
+  const [isolateMode, setIsolateMode] = useState(false); //are we isolating thi branch
   const [searchQuery, setSearchQuery] = useState(""); // NEW: Search state
   const [loadedFileName, setLoadedFileName] = useState<string | null>(null); // NEW: Store filename
   const [error, setError] = useState<string | null>(null);
@@ -53,7 +41,8 @@ export default function App() {
     const startId = selectedNode.id;
     visibleNodeIds.add(startId);
 
-    const getId = (nodeOrId: string|number|GraphNode) => (typeof nodeOrId === "object" && nodeOrId !== null) ? nodeOrId.id : nodeOrId;
+    const newLocal = (nodeOrId: string | number | GraphNode) => (typeof nodeOrId === "object" && nodeOrId !== null) ? nodeOrId.id : nodeOrId;
+    const getId = newLocal;
 
     let queue = [startId];
     while (queue.length > 0) {
@@ -123,7 +112,7 @@ export default function App() {
     const initData: GraphData = {
       nodes: [
         { id: "1", name: "Built by Arjuna", val: 10, group: 1 },
-        { id: "2", name: "Upload a file to start", val: 5, group: 2, filesSupported:"CSV,TSV,JSON"},
+        { id: "2", name: "Upload a file to start", val: 5, group: 2, filesSupported: "CSV,TSV,JSON" },
 
       ],
       links: [{ source: "1", target: "2" },
@@ -160,7 +149,7 @@ export default function App() {
         setLoadedFileName(nameWithoutExt); // Save the filename to state
 
         setTimeout(() => fgRef.current?.zoomToFit(400), 300);
-        
+
       } catch (err: unknown) {
         if (err instanceof Error) {
           setError(err.message);
@@ -197,7 +186,7 @@ export default function App() {
       // Highlight matched nodes
       if (isMatched) {
         ctx.strokeStyle = "#fbbf24"; // Yellow
-        ctx.lineWidth = 4 / globalScale; 
+        ctx.lineWidth = 4 / globalScale;
         ctx.stroke();
       }
 
@@ -206,7 +195,7 @@ export default function App() {
         ctx.font = `${fontSize}px Sans-Serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillStyle = "#e2e8f0"; 
+        ctx.fillStyle = "#e2e8f0";
         ctx.fillText(label, node.x!, node.y! + radius + fontSize);
       }
 
@@ -219,12 +208,12 @@ export default function App() {
     <div className="flex flex-col bg-transparent h-screen text-white font-sans overflow-hidden">
       <header className="p-4 bg-transparent flex justify-between items-center z-10">
         <h1 className="text-xl  text-left font-bold text-blue-400">
-           <img className="h-12 w-12 object-scale-down inline-block mr-2" src={logo} alt="logo"/>
+          <img className="h-12 w-12 object-scale-down inline-block mr-2" src={logo} alt="logo" />
           Force Viz
         </h1>
 
         <div className="flex items-center gap-4">
-          
+
           {/* NEW: Search Bar and Results Dropdown */}
           <div className="relative">
             <input
