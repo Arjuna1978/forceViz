@@ -1,5 +1,4 @@
 {
     "nodes":{ 
-        "HddenKeys": "id, name, x, y, vx, vy,index, fx, fy, color, val, group, IndexColor"}
-
+        "HddenKeys": "id, name, x, y, vx, vy, index, fx, fy, color, val, group, IndexColor"}
 }

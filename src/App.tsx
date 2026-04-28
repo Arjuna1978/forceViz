@@ -272,7 +272,7 @@ const HIDDEN_KEYS = JSON.stringify(graphConfig.nodes.HddenKeys)
 
           <label className="cursor-pointer bg-blue-600 px-4 py-2 rounded-md hover:bg-blue-500 transition-colors shadow-lg active:scale-95 text-sm font-medium whitespace-nowrap">
             Load
-            <input type="file" accept=".json, .tsv" className="hidden" onChange={handleFileUpload} />
+            <input type="file" accept=".json, .csv, .ttl, .tsv" className="hidden" onChange={handleFileUpload} />
           </label>
         </div>
       </header>
