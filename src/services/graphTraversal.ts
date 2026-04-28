@@ -1,4 +1,4 @@
-import type { GraphData, GraphNode, GraphLink } from "../types";
+import type { GraphData, GraphNode } from "../types";
 
 const getNodeId = (nodeOrId: string | number | GraphNode): string | number => 
   (typeof nodeOrId === "object" && nodeOrId !== null) ? nodeOrId.id : nodeOrId;
@@ -15,7 +15,6 @@ export const getIsolatedGraph = (
 
   // Upstream and Downstream traversal
   let queue = [startId];
-  
   // Downstream
   while (queue.length > 0) {
     const currId = queue.shift();
