@@ -7,7 +7,6 @@ const SKOS_CONCEPT_SCHEME = 'http://www.w3.org/2004/02/skos/core#ConceptScheme';
 const SKOS_PREF_LABEL = 'http://www.w3.org/2004/02/skos/core#prefLabel';
 const SKOS_BROADER = 'http://www.w3.org/2004/02/skos/core#broader';
 const SKOS_NARROWER = 'http://www.w3.org/2004/02/skos/core#narrower';
-const SKOS_IN_SCHEME = 'http://www.w3.org/2004/02/skos/core#inScheme';
 const OWL_ONTOLOGY = 'http://www.w3.org/2002/07/owl#Ontology';
 const RDFS_SUBCLASS = 'http://www.w3.org/2000/01/rdf-schema#subClassOf';
 const RDFS_LABEL = 'http://www.w3.org/2000/01/rdf-schema#label';
@@ -19,6 +18,7 @@ const DESCRIPTIVE_PREDICATES = new Set([
   'http://www.w3.org/2004/02/skos/core#scopeNote',
   'http://www.w3.org/2004/02/skos/core#historyNote'
 ]);
+const SKOS_HAS_TOP_CONCEPT = 'http://www.w3.org/2004/02/skos/core#hasTopConcept';
 
 export async function parseGraphTurtle(file: File): Promise<GraphData> {
   const text = await file.text();
@@ -38,7 +38,7 @@ export async function parseGraphTurtle(file: File): Promise<GraphData> {
       }
 
       // 2. If quad is null, parsing is finished! Now we build the graph.
-      const nodesMap = new Map<string, GraphNode>();
+      const nodesMap = new Map<string, GraphNode>(); //this holds the node by nodeID and node object
       const links: GraphLink[] = [];
       const linkSet = new Set<string>();
       const childrenMap = new Map<string, string[]>();
@@ -51,20 +51,22 @@ export async function parseGraphTurtle(file: File): Promise<GraphData> {
             name: id.split(/#|\//).pop() || id,
             val: 5,
             group: 5
-          } as GraphNode); // Explicitly cast to GraphNode
+          } as GraphNode); 
         }
       }
 
       function registerRel(parent: string, child: string) {
-        if (parent === child) return;
+        if (parent === child) return; //this is a root node
         ensureNode(parent);
         ensureNode(child);
 
         let children = childrenMap.get(parent);
+
         if (!children) {
           children = [];
           childrenMap.set(parent, children);
         }
+
         if (!children.includes(child)) children.push(child);
 
         const linkId = parent + "->" + child;
@@ -77,7 +79,6 @@ export async function parseGraphTurtle(file: File): Promise<GraphData> {
       function processHierarchy(iri: string, depth: number) {
         if (visited.has(iri)) return;
         visited.add(iri);
-
         const node = nodesMap.get(iri);
         if (node) {
           node.val = depth === 0 ? 30 : depth === 1 ? 20 : depth === 2 ? 10 : 5;
@@ -85,6 +86,7 @@ export async function parseGraphTurtle(file: File): Promise<GraphData> {
         }
 
         const children = childrenMap.get(iri);
+        
         if (children) {
           for (let i = 0; i < children.length; i++) {
             processHierarchy(children[i], depth + 1);
@@ -92,11 +94,18 @@ export async function parseGraphTurtle(file: File): Promise<GraphData> {
         }
       }
 
-      // TypeScript requires us to handle the specific N3.Term type
-function getLinkId(linkPart: any): string {
-  if (typeof linkPart === 'string') return linkPart;
-  if (linkPart && typeof linkPart === 'object' && 'id' in linkPart) return linkPart.id;
-  return String(linkPart);}
+function getLinkId(linkPart: string | number | GraphNode | undefined | null): string {
+  if (typeof linkPart === 'string') {
+    return linkPart;
+  }
+  if (typeof linkPart === 'number') {
+    return linkPart.toString();
+  }
+if (linkPart && typeof linkPart === 'object' && 'id' in linkPart) {
+    return String(linkPart.id);
+  }
+return '';
+}
 
       // 1. PRE-FILTERING
 const validEntities = new Set<string>();
@@ -139,9 +148,9 @@ for (const pred of relevantPredicates) {
           }
 
           // Relationship Logic
-          if (pred === SKOS_BROADER || pred === RDFS_SUBCLASS || pred === SKOS_IN_SCHEME) {
+          if (pred === SKOS_BROADER || pred === RDFS_SUBCLASS) {
             if (validEntities.has(obj.id)) registerRel(obj.id, iri);
-          } else if (pred === SKOS_NARROWER) {
+          } else if (pred === SKOS_NARROWER || pred === SKOS_HAS_TOP_CONCEPT) {
             if (validEntities.has(obj.id)) registerRel(iri, obj.id);
           }
 
