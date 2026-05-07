@@ -1,11 +1,11 @@
 # Force viz
 
-This is a online tool that will visualise a network diagram.
+This tool helps you visualise heirarchical data like taxonomies.
 
-## Input
+## Supported filetypes
 
-Fie input can be in JSON as per :
-https://stackoverflow.com/questions/43625858/how-to-work-d3-with-json-format-instead-of-csv
+### JSON as per :
+Stackoverflow: Data represntation in json format [https://stackoverflow.com/questions/43625858/how-to-work-d3-with-json-format-instead-of-csv]
 
 ````
 {
@@ -19,6 +19,18 @@ https://stackoverflow.com/questions/43625858/how-to-work-d3-with-json-format-ins
 }
 `
 ````
+
+### TSV
+TSV and CSV files are supported.
+
+Example taxonomies like IAB:
+[IAB Taxonomies] (https://github.com/InteractiveAdvertisingBureau/Taxonomies/tree/main)
+
+
+### TTL
+Good TTL example is:
+
+[ITPC News topic schema] (https://cv.iptc.org/newscodes/subjectcode?lang=en-GB&format=rdfttl)
 
 
 ## lanuch here
