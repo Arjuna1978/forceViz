@@ -50,7 +50,7 @@ export const parseGraphTSV = (file: File): Promise<GraphData> => {
         // 2. Parse data starting from the row after headers
         for (let i = headerRowIndex + 1; i < lines.length; i++) {
           const cols = lines[i].split(delimiter).map((c) => c.trim());
-          const id = cols[idIdx];
+          const id = cols[idIdx].replace(/\.0$/, "");
 
           if (!id) continue;
           
