@@ -25,7 +25,6 @@ export default function App() {
   // Calculate matched nodes for the dropdown list
   const matchedNodes = useMemo(() => {
     if (!searchQuery.trim()) return [];
-    const query = searchQuery.toLowerCase();
     return graphData.nodes.filter(
       (node) =>
         searchQuery.toLowerCase().includes("level:")||searchQuery.toLowerCase().includes("l:")?String(node.group || "").toLowerCase().includes(searchQuery.split(':')[1].trim()) :
