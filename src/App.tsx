@@ -14,7 +14,7 @@ export default function App() {
     nodes: [],
     links: [],
   });
-const HIDDEN_KEYS = JSON.stringify(graphConfig.nodes.HddenKeys)
+  const HIDDEN_KEYS = JSON.stringify(graphConfig.nodes.HddenKeys)
   const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null); // for keeping track of which node is urrently in focus
   const [isolateMode, setIsolateMode] = useState(false); //are we isolating thi branch
   const [searchQuery, setSearchQuery] = useState(""); // NEW: Search state
@@ -27,9 +27,10 @@ const HIDDEN_KEYS = JSON.stringify(graphConfig.nodes.HddenKeys)
     if (!searchQuery.trim()) return [];
     const query = searchQuery.toLowerCase();
     return graphData.nodes.filter(
-      (n) =>
-        String(n.name || "").toLowerCase().includes(query) ||
-        String(n.id || "").toLowerCase().includes(query)
+      (node) =>
+        searchQuery.toLowerCase().includes("level:")||searchQuery.toLowerCase().includes("l:")?String(node.group || "").toLowerCase().includes(searchQuery.split(':')[1].trim()) :
+        String(node.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+        String(node.id || "").toLowerCase().includes(searchQuery.toLowerCase()) 
     );
   }, [searchQuery, graphData.nodes]);
 
@@ -171,8 +172,9 @@ const HIDDEN_KEYS = JSON.stringify(graphConfig.nodes.HddenKeys)
 
       // Determine search matches
       const isMatched = searchQuery && (
+        searchQuery.toLowerCase().includes("level:")||searchQuery.toLowerCase().includes("l:")?String(node.group || "").toLowerCase().includes(searchQuery.split(':')[1].trim()) :
         String(node.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-        String(node.id || "").toLowerCase().includes(searchQuery.toLowerCase())
+        String(node.id || "").toLowerCase().includes(searchQuery.toLowerCase()) 
       );
       const isDimmed = Boolean(searchQuery) && !isMatched;
 
@@ -223,7 +225,7 @@ const HIDDEN_KEYS = JSON.stringify(graphConfig.nodes.HddenKeys)
               onChange={(e) => setSearchQuery(e.target.value)}
               className="bg-gray-800 text-sm text-white px-4 py-2 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-64 shadow-inner"
             />
-            {/* Results Dropdown */}
+            {/* search Results Dropdown*/}
             {searchQuery && (
               <div className="absolute top-full right-0 mt-2 w-80 max-h-72 overflow-y-auto bg-gray-800 border border-gray-600 rounded-md shadow-2xl z-50 custom-scrollbar">
                 {matchedNodes.length > 0 ? (
@@ -260,7 +262,7 @@ const HIDDEN_KEYS = JSON.stringify(graphConfig.nodes.HddenKeys)
             )}
           </div>
 
-          {/* NEW: Display loaded filename */}
+          {/*Display loaded filename */}
           {loadedFileName && (
             <div
               className="text-sm font-medium text-blue-200 bg-blue-900/30 px-3 py-1.5 rounded-md border border-blue-800/50 truncate max-w-[200px] select-none"
