@@ -1,6 +1,6 @@
 // src/parseGraphTurtle.ts
 import * as N3 from 'n3';
-import type { GraphData, GraphNode, GraphLink } from "../types";
+import type { GraphData, GraphNode, GraphLink } from "../../types";
 
 const RDF_TYPE = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type';
 const SKOS_CONCEPT_SCHEME = 'http://www.w3.org/2004/02/skos/core#ConceptScheme';
@@ -23,15 +23,17 @@ const SKOS_HAS_TOP_CONCEPT = 'http://www.w3.org/2004/02/skos/core#hasTopConcept'
 export async function parseGraphTurtle(file: File): Promise<GraphData> {
   const text = await file.text();
   const parser = new N3.Parser();
+  //create new NB stire
   const store = new N3.Store();
 
   return new Promise((resolve, reject) => {
     parser.parse(text, (error: Error | null, quad: N3.Quad | null) => {
+
       if (error) {
         return reject(error);
       }
 
-      // 1. If it's a quad, add it to the store and exit the callback
+      // 1. If it's a quad, add it to the store and exit the callback because this represents a node
       if (quad) {
         store.add(quad);
         return; 
@@ -39,26 +41,27 @@ export async function parseGraphTurtle(file: File): Promise<GraphData> {
 
       // 2. If quad is null, parsing is finished! Now we build the graph.
       const nodesMap = new Map<string, GraphNode>(); //this holds the node by nodeID and node object
-      const links: GraphLink[] = [];
-      const linkSet = new Set<string>();
+      const links: GraphLink[] = []; // this holds links in th moddle
+      const linkSet = new Set<string>(); 
       const childrenMap = new Map<string, string[]>();
       const visited = new Set<string>();
 
-      function ensureNode(id: string) {
-        if (!nodesMap.has(id)) {
-          nodesMap.set(id, {
-            id,
-            name: id.split(/#|\//).pop() || id,
-            val: 5,
-            group: 5
+      function addNode(nodeID: string, group =1, val =5) {
+        //This function adds individual nodes to the model
+        if (!nodesMap.has(nodeID)) { //node is not already mapped!
+          nodesMap.set(nodeID, {
+            id: nodeID,
+            name: nodeID.split(/#|\//).pop() || nodeID,
+            val: val,
+            group: group
           } as GraphNode); 
         }
       }
 
       function registerRel(parent: string, child: string) {
         if (parent === child) return; //this is a root node
-        ensureNode(parent);
-        ensureNode(child);
+        addNode(parent);
+        addNode(child);
 
         let children = childrenMap.get(parent);
 
@@ -123,11 +126,11 @@ for (const pred of relevantPredicates) {
       for (let i = 0; i < subjects.length; i++) {
         const iri = subjects[i].id;
         if (!validEntities.has(iri)) continue;
-
         const quads = store.getQuads(subjects[i], null, null, null);
         
         let name = "";
         let bestLabelScore = -1;
+
         const metadata: Record<string, string> = {};
 
         for (let j = 0; j < quads.length; j++) {

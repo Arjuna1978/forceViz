@@ -1,4 +1,4 @@
-import type { GraphData, GraphNode, GraphLink } from "../types";
+import type { GraphData, GraphNode, GraphLink } from "../../types";
 
 export const parseGraphTSV = (file: File): Promise<GraphData> => {
   return new Promise((resolve, reject) => {

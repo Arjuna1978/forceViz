@@ -1,4 +1,4 @@
-import type { GraphData } from "../types";
+import type { GraphData } from "../../types";
 
 export const parseGraphJSON = (file: File): Promise<GraphData> => {
   return new Promise((resolve, reject) => {
