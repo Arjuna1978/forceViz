@@ -1,95 +1,50 @@
-import React, { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import React, { useState, useCallback, useRef, useEffect} from "react";
 import ForceGraph2D, { type ForceGraphMethods } from "react-force-graph-2d";
 import type { GraphNode, GraphData, GraphLink } from "./types";
-import { processUploadedFile } from "./services/processFileUpload";
+import { processUploadedFile } from "./services/importHandlers/processFileUpload";
 import logo from "./assets/favicon.svg";
 import graphConfig from "./config/graphConfig.json"
+import {useNodeSearch} from "./hooks/useNodeSearch"
+import { useGraphIsolation } from "./hooks/useGraphIsolation";
 
 
 
 export default function App() {
+  //container variables
   const containerRef = useRef<HTMLElement>(null);
+  const fgRef = useRef<ForceGraphMethods<GraphNode, GraphLink>>(undefined);
+  
+  // graph variables
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [graphData, setGraphData] = useState<GraphData>({
     nodes: [],
     links: [],
   });
+  const { searchQuery, setSearchQuery, matchedNodes } = useNodeSearch(graphData.nodes);
+
+  //data variables
+const {
+    selectedNode,
+    setSelectedNode,
+    isolateMode,
+    setIsolateMode,
+    visibleGraphData,
+  } = useGraphIsolation(graphData);
   const HIDDEN_KEYS = JSON.stringify(graphConfig.nodes.HddenKeys)
-  const [selectedNode, setSelectedNode] = useState<GraphNode | null>(null); // for keeping track of which node is urrently in focus
-  const [isolateMode, setIsolateMode] = useState(false); //are we isolating thi branch
-  const [searchQuery, setSearchQuery] = useState(""); // NEW: Search state
   const [loadedFileName, setLoadedFileName] = useState<string | null>(null); // NEW: Store filename
   const [error, setError] = useState<string | null>(null);
-  const fgRef = useRef<ForceGraphMethods<GraphNode, GraphLink>>(undefined);
+  
 
-  // Calculate matched nodes for the dropdown list
-  const matchedNodes = useMemo(() => {
-    if (!searchQuery.trim()) return [];
-    return graphData.nodes.filter(
-      (node) =>
-        searchQuery.toLowerCase().includes("level:")||searchQuery.toLowerCase().includes("l:")?String(node.group || "").toLowerCase().includes(searchQuery.split(':')[1].trim()) :
-        String(node.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
-        String(node.id || "").toLowerCase().includes(searchQuery.toLowerCase()) 
-    );
-  }, [searchQuery, graphData.nodes]);
-
-  // Calculate the visible portion of the graph based on the isolate mode
-  const visibleGraphData = useMemo(() => {
-    if (!isolateMode || !selectedNode) return graphData;
-
-    const visibleNodeIds = new Set<string | number>();
-    const startId = selectedNode.id;
-    visibleNodeIds.add(startId);
-
-    const newLocal = (nodeOrId: string | number | GraphNode) => (typeof nodeOrId === "object" && nodeOrId !== null) ? nodeOrId.id : nodeOrId;
-    const getId = newLocal;
-
-    let queue = [startId];
-    while (queue.length > 0) {
-      const currId = queue.shift();
-      graphData.links.forEach((link) => {
-        if (getId(link.source) === currId) {
-          const targetId = getId(link.target);
-          if (!visibleNodeIds.has(targetId)) {
-            visibleNodeIds.add(targetId);
-            queue.push(targetId);
-          }
-        }
-      });
-    }
-
-    queue = [startId];
-    while (queue.length > 0) {
-      const currId = queue.shift();
-      graphData.links.forEach((link) => {
-        if (getId(link.target) === currId) {
-          const sourceId = getId(link.source);
-          if (!visibleNodeIds.has(sourceId)) {
-            visibleNodeIds.add(sourceId);
-            queue.push(sourceId);
-          }
-        }
-      });
-    }
-
-    return {
-      nodes: graphData.nodes.filter((n) => visibleNodeIds.has(n.id)),
-      links: graphData.links.filter(
-        (l) => visibleNodeIds.has(getId(l.source)) && visibleNodeIds.has(getId(l.target))
-      ),
-    };
-  }, [graphData, selectedNode, isolateMode]);
-
-
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       if (fgRef.current && visibleGraphData.nodes.length > 0) {
         const fg = fgRef.current;
         if (fg.d3Force("link")) {
-          fg.d3Force("link")?.distance(150);
+          fg.d3Force("link")?.distance(1);
         }
         if (fg.d3Force("charge")) {
-          fg.d3Force("charge")?.strength(-2000);
+          fg.d3Force("charge")?.strength(-5000);
         }
         fg.d3ReheatSimulation();
       }
@@ -112,7 +67,7 @@ export default function App() {
     const initData: GraphData = {
       nodes: [
         { id: "1", name: "Built by Arjuna", val: 10, group: 1 },
-        { id: "2", name: "Upload a file to start", val: 5, group: 2, filesSupported: "CSV,TSV,JSON" },
+        { id: "2", name: "Upload a file to start", val: 5, group: 2, filesSupported: "TTl,CSV,TSV,JSON" },
 
       ],
       links: [{ source: "1", target: "2" },
@@ -134,7 +89,7 @@ export default function App() {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    // Extract filename and strip the extension (.tsv, .json, etc.)
+    // Extract filename 
     const nameWithoutExt = file.name.replace(/\.[^/.]+$/, "");
 
     const reader = new FileReader();
@@ -169,12 +124,17 @@ export default function App() {
       const fontSize = 12 / globalScale;
       const radius = Math.sqrt(node.val || 4) * 2;
 
-      // Determine search matches
+      // Manages the node behaviour if it matches a search in the search bar:
+
+    
       const isMatched = searchQuery && (
         searchQuery.toLowerCase().includes("level:")||searchQuery.toLowerCase().includes("l:")?String(node.group || "").toLowerCase().includes(searchQuery.split(':')[1].trim()) :
         String(node.name || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
         String(node.id || "").toLowerCase().includes(searchQuery.toLowerCase()) 
       );
+
+      // (2) Dims anything does not match or 
+
       const isDimmed = Boolean(searchQuery) && !isMatched;
 
       ctx.globalAlpha = isDimmed ? 0.15 : 1.0;
@@ -215,7 +175,7 @@ export default function App() {
 
         <div className="flex items-center gap-4">
 
-          {/* NEW: Search Bar and Results Dropdown */}
+          {/* Search Bar and Results Dropdown */}
           <div className="relative">
             <input
               type="text"

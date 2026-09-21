@@ -1,7 +1,7 @@
 import { parseGraphJSON } from "./parseGraphJSON";
-import { parseGraphTSV } from "./parserGraphSpreadSheet";
+import { parseGraphTSV } from "./parserGraphSpreadSheet1";
 import { parseGraphTurtle } from "./parseGraphTurtle";
-import type { GraphData } from "../types";
+import type { GraphData } from "../../types";
 
 export const processUploadedFile = async (file: File): Promise<GraphData> => {
   const fileName = file.name.toLowerCase();
