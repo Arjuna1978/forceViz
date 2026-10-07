@@ -19,3 +19,8 @@ export interface GraphData {
   nodes: GraphNode[];
   links: GraphLink[];
 }
+
+export interface PhysicsConfig{
+  linkDistance: number;
+  chargeStrength: number; 
+}
