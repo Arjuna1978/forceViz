@@ -107,6 +107,7 @@ export default function App() {
         fg.d3ReheatSimulation();
       }
     }, 100);
+    
     return () => clearTimeout(timer);
   }, [visibleGraphData]);
 
